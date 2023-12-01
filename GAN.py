@@ -2,14 +2,15 @@ import os
 import numpy as np
 import matplotlib.pyplot as plt
 
-import keras
-from tensorflow.keras.layers import Input, Dense, Reshape, Flatten, Dropout
-from tensorflow.keras.layers import BatchNormalization, Activation, ZeroPadding2D
+# import keras
+from tensorflow.keras.layers import Input, Dense
+from tensorflow.keras.layers import BatchNormalization, Activation
 from tensorflow.keras.layers import LeakyReLU
 from tensorflow.keras.layers import UpSampling2D, Conv2D
-from tensorflow.keras.models import Sequential, Model
+from tensorflow.keras.models import Model
 from keras.optimizers import Adam
 from keras.layers import Add
+from keras.applications import VGG19
 
 from LoadData import DataLoader
 import datetime
@@ -38,6 +39,12 @@ class GAN():
 
         self.gf = 64
         self.df = 64
+
+        self.vgg = self.build_vgg()
+        self.vgg.trainable = False
+        self.vgg.compile(loss='mse',
+                         optimizer=optimizer,
+                         metrics=['accuracy'])
 
         # Build and compile the discriminator
         self.discriminator = self.build_discriminator()
@@ -69,6 +76,17 @@ class GAN():
         self.combined.compile(loss=['binary_crossentropy', 'mse'],
                               loss_weights=[1e-3, 1],
                               optimizer=optimizer)
+
+    def build_vgg(self):
+        print("start loading trained weights of vgg")
+        vgg = VGG19(weights="imagenet")
+        print("loading complete")
+        vgg.outputs = [vgg.layers[9].output]
+
+        img = Input(shape=self.hr_shape)
+        img_features = vgg(img)
+        return  Model(img, img_features)
+
 
     # 构造生成器
     def build_generator(self):
@@ -191,6 +209,27 @@ class GAN():
                 self.sample_images(epoch)
             if epoch % 500 == 0 and epoch > 1:
                 self.generator.save_weights('./premodel/' + str(epoch) + '.h5')
+
+    def use_image(self, batch_size=1):
+        imgs_hr, imgs_lr = self.data_loader.load_data(batch_size, is_pred=True)
+        os.makedirs('premodel/', exist_ok=True)
+        self.generator.loss_weights('./premodel/' + str(2000) + '.h5')
+        fake_hr = self.generator.predict(imgs_lr)
+        r, c = imgs_hr.shape[0], 2
+        imgs_lr = 0.5 * imgs_lr + 0.5
+        fake_hr = 0.5 * fake_hr + 0.5
+        imgs_hr = 0.5 * imgs_hr + 0.5
+
+        titles = ['input', 'generate']
+        fig, axs = plt.subplots(r, c)
+        for i in range(c):
+            for j, image in enumerate([imgs_lr, fake_hr]):
+                axs[i, j].imshow(image[i])
+                axs[i, j].set_title(titles[j])
+                axs[i, j].axis('off')
+
+        fig.savefig("./result.png")
+        plt.close()
 
 
     def sample_images(self, epoch):
