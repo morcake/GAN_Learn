@@ -4,7 +4,11 @@ import matplotlib.pyplot as plt
 
 import keras
 from tensorflow.keras.layers import Input, Dense, Reshape, Flatten, Dropout
-
+from tensorflow.keras.layers import Input, Dense, Reshape, Flatten, Dropout
+from tensorflow.keras.layers import BatchNormalization, Activation, ZeroPadding2D
+from tensorflow.keras.layers import LeakyReLU
+from tensorflow.keras.layers import UpSampling2D, Conv2D
+from tensorflow.keras.models import Sequential, Model
 from keras.optimizers import Adam
 
 
