@@ -33,10 +33,16 @@ class GAN():
         self.data_loader = DataLoader(dataset_name=self.dataset_name,
                                       img_res=(self.hr_height, self.hr_width))
 
+        patch = int(self.hr_height / 2 ** 4)
+        self.disc_patch = (patch, patch, 1)
+
+        self.gf = 64
+        self.df = 64
+
         # Build and compile the discriminator
         self.discriminator = self.build_discriminator()
         self.discriminator.compile(
-            loss='binary_crossentropy',
+            loss='mse',
             optimizer=optimizer,
             metrics=['accuracy'])
 
@@ -60,7 +66,9 @@ class GAN():
         # 组合模型(堆叠生成器和鉴别器)
         # 训练生成器以糊弄鉴别器
         self.combined = Model([img_lr, img_hr], [validity, fake_features])
-        self.combined.compile(loss='binary_crossentropy', optimizer=optimizer)
+        self.combined.compile(loss=['binary_crossentropy', 'mse'],
+                              loss_weights=[1e-3, 1],
+                              optimizer=optimizer)
 
     # 构造生成器
     def build_generator(self):
@@ -163,7 +171,7 @@ class GAN():
             # ------------------
 
             # Sample images and their conditioning counterparts
-            imgs_hr, imgs_lr = self.DataLoader.load_data(batch_size)
+            imgs_hr, imgs_lr = self.data_loader.load_data(batch_size)
 
             # The generators want the discriminators to label the generated images as real
             valid = np.ones((batch_size,) + self.disc_patch)
@@ -180,13 +188,12 @@ class GAN():
 
             # If at save interval => save generated image samples
             if epoch % sample_interval == 0:
-                self.sample_images_new(epoch)
+                self.sample_images(epoch)
             if epoch % 500 == 0 and epoch > 1:
-                self.generator.save_w
+                self.generator.save_weights('./premodel/' + str(epoch) + '.h5')
 
 
-
-def sample_images(self, epoch):
+    def sample_images(self, epoch):
         os.makedirs('images/', exist_ok=True)
         imgs_hr, imgs_lr = self.data_loader.load_data(batch_size=1, is_testing=True, is_pred=True)
         fake_hr = self.generator.predict(imgs_lr)
