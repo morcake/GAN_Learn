@@ -1,13 +1,15 @@
+from __future__ import print_function, division
 import os
 import numpy as np
 import matplotlib.pyplot as plt
 
 # import keras
-from tensorflow.keras.layers import Input, Dense
-from tensorflow.keras.layers import BatchNormalization, Activation
-from tensorflow.keras.layers import LeakyReLU
-from tensorflow.keras.layers import UpSampling2D, Conv2D
-from tensorflow.keras.models import Model
+# from tensorflow.keras.layers import Input, Dense
+from keras.layers import *
+from keras.layers import BatchNormalization, Activation
+from keras.layers.advanced_activations import LeakyReLU
+from keras.layers import UpSampling2D, Conv2D
+from keras.models import Model
 from keras.optimizers import Adam
 from keras.layers import Add
 from keras.applications import VGG19
@@ -30,6 +32,12 @@ class GAN():
         # 设置优化器
         optimizer = Adam(0.0002, 0.5)
 
+        self.vgg = self.build_vgg()
+        self.vgg.trainable = False
+        self.vgg.compile(loss='mse',
+                         optimizer=optimizer,
+                         metrics=['accuracy'])
+
         self.dataset_name = './datasets/img_align_celeba'
         self.data_loader = DataLoader(dataset_name=self.dataset_name,
                                       img_res=(self.hr_height, self.hr_width))
@@ -40,18 +48,12 @@ class GAN():
         self.gf = 64
         self.df = 64
 
-        self.vgg = self.build_vgg()
-        self.vgg.trainable = False
-        self.vgg.compile(loss='mse',
-                         optimizer=optimizer,
-                         metrics=['accuracy'])
-
         # Build and compile the discriminator
         self.discriminator = self.build_discriminator()
         self.discriminator.compile(
-            loss='mse',
-            optimizer=optimizer,
-            metrics=['accuracy'])
+                                    loss='mse',
+                                    optimizer=optimizer,
+                                    metrics=['accuracy'])
 
         # Build the generator
         self.generator = self.build_generator()
@@ -213,7 +215,7 @@ class GAN():
     def use_image(self, batch_size=1):
         imgs_hr, imgs_lr = self.data_loader.load_data(batch_size, is_pred=True)
         os.makedirs('premodel/', exist_ok=True)
-        self.generator.loss_weights('./premodel/' + str(2000) + '.h5')
+        self.generator.load_weights('./premodel/' + str(2000) + '.h5')
         fake_hr = self.generator.predict(imgs_lr)
         r, c = imgs_hr.shape[0], 2
         imgs_lr = 0.5 * imgs_lr + 0.5
@@ -222,7 +224,7 @@ class GAN():
 
         titles = ['input', 'generate']
         fig, axs = plt.subplots(r, c)
-        for i in range(c):
+        for i in range(r):
             for j, image in enumerate([imgs_lr, fake_hr]):
                 axs[i, j].imshow(image[i])
                 axs[i, j].set_title(titles[j])

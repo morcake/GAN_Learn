@@ -26,11 +26,11 @@ class DataLoader():
             h, w = self.img_res
             low_h, low_w = int(h/4), int(w/4)
             img_hr = scipy.misc.imresize(img, self.img_res)
-            img_ls = scipy.misc.imresize(img, (low_h, low_h))
+            img_lr = scipy.misc.imresize(img, (low_h, low_h))
 
             if not is_testing and np.random.random() < 0.5 :
                 img_hr = np.fliplr(img_hr)
-                img_lr = np.fliplr(imgs_lr)
+                img_lr = np.fliplr(img_lr)
             imgs_hr.append(img_hr)
             imgs_lr.append((img_lr))
 
