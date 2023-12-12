@@ -222,7 +222,7 @@ class GAN():
         fake_hr = 0.5 * fake_hr + 0.5
         imgs_hr = 0.5 * imgs_hr + 0.5
 
-        titles = ['input', 'generate']
+        titles = ['LR_input', 'SR_generate']
         fig, axs = plt.subplots(r, c)
         for i in range(r):
             for j, image in enumerate([imgs_lr, fake_hr]):
@@ -245,11 +245,12 @@ class GAN():
         imgs_hr = 0.5 * imgs_hr + 0.5
         r, c = imgs_hr.shape[0], 3
 
-        titles = ['Generated  epoch: ' + str(epoch), 'Original', 'Low']
+        titles = ['LRimage', 'Generated  epoch: ' + str(epoch), 'Original']
         fig, axs = plt.subplots(r, c)
 
         for i in range(r):
-            for j, image in enumerate([fake_hr, imgs_hr, imgs_lr]):
+            # for j, image in enumerate([fake_hr, imgs_hr, imgs_lr]):
+            for j, image in enumerate([imgs_lr, fake_hr, imgs_hr]):
                 axs[i, j].imshow(image[i])
                 axs[i, j].set_title(titles[j])
                 axs[i, j].axis('off')
