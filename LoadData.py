@@ -20,6 +20,7 @@ class DataLoader():
 
         imgs_hr = []
         imgs_lr = []
+
         for img_path in batch_images:
             img = self.imgread(img_path)
 

@@ -230,7 +230,7 @@ class GAN():
                 axs[i, j].set_title(titles[j])
                 axs[i, j].axis('off')
 
-        fig.savefig("./result.png")
+        fig.savefig("./Result.png")
         plt.close()
 
 
