@@ -3,7 +3,22 @@ Neural networks course assignment.
 
 This project have three code files include Realize.py, LoadData.py, GenerateGif.py.
 
+```bash
+pip install -r requirements.txt
+```
+
+## Paper
+
+[[1609.04802\] Photo-Realistic Single Image Super-Resolution Using a Generative Adversarial Network (arxiv.org)](https://arxiv.org/abs/1609.04802)
+
 This design is mainly based on the generative adversarial neural network taught by the teacher and the paper reference understanding.
+
+## Datasets
+[img_align_celeba](https://mmlab.ie.cuhk.edu.hk/projects/CelebA.html)
+
+Download it and put it in the datasets folder.
+
+## Thoughts
 
 Thinks it and Try again, have a long time.
 
