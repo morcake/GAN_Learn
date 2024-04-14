@@ -1,5 +1,5 @@
-# NNwork -- 2023.12.23
-Neural networks course assignment.
+# GAN_Learn -- 2023.12.23
+Neural network -- GAN
 
 This project have three code files include Realize.py, LoadData.py, GenerateGif.py.
 
@@ -11,7 +11,7 @@ pip install -r requirements.txt
 
 [[1609.04802\] Photo-Realistic Single Image Super-Resolution Using a Generative Adversarial Network (arxiv.org)](https://arxiv.org/abs/1609.04802)
 
-This design is mainly based on the generative adversarial neural network taught by the teacher and the paper reference understanding.
+This design is mainly based on the generative adversarial neural network and the paper reference understanding.
 
 ## Datasets
 [img_align_celeba](https://mmlab.ie.cuhk.edu.hk/projects/CelebA.html)
